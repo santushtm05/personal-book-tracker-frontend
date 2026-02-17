@@ -51,7 +51,7 @@ class BookService {
   Future<Book> addBook(Map<String, dynamic> bookData) async {
     final headers = await _getHeaders();
     final response = await http.post(
-      Uri.parse(_baseUrl),
+      Uri.parse('$_baseUrl/create'),
       headers: headers,
       body: jsonEncode(bookData),
     );
