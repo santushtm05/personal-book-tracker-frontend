@@ -3,9 +3,10 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/book.dart';
 import '../models/tag.dart';
+import '../utils/constants.dart';
 
 class BookService {
-  static const String _baseUrl = 'http://localhost:8080/api/books';
+  static const String _baseUrl = AppConstants.booksUrl;
 
   Future<Map<String, String>> _getHeaders() async {
     final prefs = await SharedPreferences.getInstance();
@@ -93,7 +94,7 @@ class BookService {
   Future<Tag> createTag(String tagName) async {
     final headers = await _getHeaders();
     final response = await http.post(
-      Uri.parse('http://localhost:8080/api/tags/create'),
+      Uri.parse('${AppConstants.tagsUrl}/create'),
       headers: headers,
       body: jsonEncode({'tag_name': tagName}),
     );
@@ -108,7 +109,7 @@ class BookService {
   Future<List<Tag>> getTags() async {
     final headers = await _getHeaders();
     final response = await http.get(
-      Uri.parse('http://localhost:8080/api/tags/'),
+      Uri.parse('${AppConstants.tagsUrl}/'),
       headers: headers,
     );
 

@@ -1,12 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/auth_response.dart';
+import '../utils/constants.dart';
 
 class AuthService {
-  // Use 10.0.2.2 for Android Emulator, localhost for iOS Simulator/Web
-  // Ideally this should be configurable.
-  static const String _apiBase = 'http://localhost:8080/api';
-  static const String _baseUrl = '$_apiBase/auth'; 
+  static const String _baseUrl = AppConstants.authUrl; 
 
   Future<AuthResponse> login(String username, String password) async {
     try {
@@ -66,7 +64,7 @@ class AuthService {
   Future<AuthResponse> getProfile(String token) async {
     try {
       final response = await http.get(
-        Uri.parse('$_apiBase/auth/get-authenticated-user-details'),
+        Uri.parse('${AppConstants.apiBaseUrl}/auth/get-authenticated-user-details'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -91,7 +89,7 @@ class AuthService {
   Future<AuthResponse> updateProfile(int userId, String token, Map<String, dynamic> data) async {
     try {
       final response = await http.patch(
-        Uri.parse('$_apiBase/users/update/$userId'),
+        Uri.parse('${AppConstants.apiBaseUrl}/users/update/$userId'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
