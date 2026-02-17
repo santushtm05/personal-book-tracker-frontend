@@ -22,6 +22,7 @@ class BookDetailScreen extends StatelessWidget {
             status: 'UNKNOWN',
             rating: 0,
             pages: 0,
+            description: '',
             tags: [],
           ),
         );
@@ -116,6 +117,18 @@ class BookDetailScreen extends StatelessWidget {
                             ),
                           ],
                         ),
+                        if (book.description != null && book.description!.isNotEmpty) ...[
+                          const SizedBox(height: 24),
+                          const Text(
+                            'Description',
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            book.description!,
+                            style: const TextStyle(fontSize: 16, height: 1.5),
+                          ),
+                        ],
                         const SizedBox(height: 24),
                         const Text(
                           'Tags',

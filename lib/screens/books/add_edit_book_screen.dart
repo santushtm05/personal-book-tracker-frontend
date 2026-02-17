@@ -23,6 +23,7 @@ class _AddEditBookScreenState extends State<AddEditBookScreen> {
   late TextEditingController _pagesController;
   late TextEditingController _ratingController;
   late TextEditingController _thumbnailController;
+  late TextEditingController _descriptionController;
   
   String _status = 'CREATED';
   List<Tag> _availableTags = [];
@@ -37,6 +38,7 @@ class _AddEditBookScreenState extends State<AddEditBookScreen> {
     _pagesController = TextEditingController(text: widget.book?.pages.toString() ?? '');
     _ratingController = TextEditingController(text: widget.book?.rating.toString() ?? '');
     _thumbnailController = TextEditingController(text: widget.book?.thumbnailUrl ?? '');
+    _descriptionController = TextEditingController(text: widget.book?.description ?? '');
     
     if (widget.book != null) {
       _status = widget.book!.status;
@@ -63,6 +65,7 @@ class _AddEditBookScreenState extends State<AddEditBookScreen> {
     _pagesController.dispose();
     _ratingController.dispose();
     _thumbnailController.dispose();
+    _descriptionController.dispose();
     super.dispose();
   }
 
@@ -74,6 +77,7 @@ class _AddEditBookScreenState extends State<AddEditBookScreen> {
         'status': _status,
         'rating': double.tryParse(_ratingController.text) ?? 0.0,
         'pages': int.tryParse(_pagesController.text) ?? 0,
+        'description': _descriptionController.text.trim(),
         'thumbnail_url': _thumbnailController.text.trim(),
         'tags': _selectedTags.map((t) => t.id).toList(), // API expects [1, 3, 2]
       };
@@ -223,6 +227,13 @@ class _AddEditBookScreenState extends State<AddEditBookScreen> {
                 label: 'Thumbnail URL',
                 controller: _thumbnailController,
                 prefixIcon: Icons.image,
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                label: 'Description',
+                controller: _descriptionController,
+                maxLines: 5,
+                prefixIcon: Icons.description,
               ),
               const SizedBox(height: 24),
               Row(

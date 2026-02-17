@@ -7,6 +7,7 @@ class Book {
   final String status;
   final double rating;
   final int pages;
+  final String? description; // New
   final String? thumbnailUrl; // Optional
   final List<Tag> tags;
 
@@ -17,6 +18,7 @@ class Book {
     required this.status,
     required this.rating,
     required this.pages,
+    this.description,
     this.thumbnailUrl,
     required this.tags,
   });
@@ -35,6 +37,7 @@ class Book {
       // Handle int or double for rating
       rating: (json['rating'] as num).toDouble(),
       pages: json['pages'],
+      description: json['description'],
       thumbnailUrl: json['thumbnail_url'],
       tags: tags,
     );
@@ -48,6 +51,7 @@ class Book {
       'status': status,
       'rating': rating,
       'pages': pages,
+      'description': description,
       'thumbnail_url': thumbnailUrl,
       'tags': tags.map((t) => t.toJson()).toList(),
     };
