@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/custom_text_field.dart';
 import '../../widgets/primary_button.dart';
+import '../../screens/books/book_list_screen.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -38,7 +39,10 @@ class _LoginScreenState extends State<LoginScreen> {
            ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Login Successful!')),
           );
-           // TODO: Navigate to BookListScreen
+           Navigator.pushReplacement(
+             context,
+             MaterialPageRoute(builder: (context) => const BookListScreen()),
+           );
         }
       } else {
         if (mounted) {
