@@ -16,8 +16,6 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final _fullNameController = TextEditingController();
   final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
 
   bool _isUsernameAvailable = true;
   bool _isCheckingUsername = false;
@@ -26,19 +24,29 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   @override
   void initState() {
     super.initState();
-    final user = Provider.of<AuthProvider>(context, listen: false).user;
-    if (user != null) {
-      _fullNameController.text = user.fullName ?? '';
-      _usernameController.text = user.username;
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    if (authProvider.user != null) {
+      _fullNameController.text = authProvider.user!.fullName ?? '';
+      _usernameController.text = authProvider.user!.username;
     }
+    
+    // Fetch fresh details
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      authProvider.fetchUserDetails().then((_) {
+        if (mounted && authProvider.user != null) {
+          setState(() {
+            _fullNameController.text = authProvider.user!.fullName ?? '';
+            _usernameController.text = authProvider.user!.username;
+          });
+        }
+      });
+    });
   }
 
   @override
   void dispose() {
     _fullNameController.dispose();
     _usernameController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
     _debounce?.cancel();
     super.dispose();
   }
@@ -68,10 +76,6 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         'full_name': _fullNameController.text.trim(),
         'username': _usernameController.text.trim(),
       };
-
-      if (_passwordController.text.isNotEmpty) {
-        data['password'] = _passwordController.text;
-      }
 
       final success = await Provider.of<AuthProvider>(context, listen: false).updateUserDetails(data);
 
@@ -139,28 +143,6 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                 ),
               const SizedBox(height: 24),
               const Divider(),
-              const SizedBox(height: 24),
-              const Text('Change Password (optional)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-              const SizedBox(height: 16),
-              CustomTextField(
-                label: 'New Password',
-                controller: _passwordController,
-                prefixIcon: Icons.lock_outline,
-                isPassword: true,
-              ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                label: 'Confirm New Password',
-                controller: _confirmPasswordController,
-                prefixIcon: Icons.lock_clock_outlined,
-                isPassword: true,
-                validator: (v) {
-                  if (_passwordController.text.isNotEmpty && v != _passwordController.text) {
-                    return 'Passwords do not match';
-                  }
-                  return null;
-                },
-              ),
               const SizedBox(height: 40),
               PrimaryButton(
                 text: 'UPDATE PROFILE',
@@ -171,7 +153,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               TextButton(
                 onPressed: () {
                   authProvider.logout();
-                  Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+                  Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
                 },
                 child: const Text('Logout', style: TextStyle(color: Colors.redAccent)),
               ),
