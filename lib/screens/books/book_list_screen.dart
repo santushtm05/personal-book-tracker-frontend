@@ -5,6 +5,7 @@ import '../../providers/book_provider.dart';
 import 'dart:async';
 import 'add_edit_book_screen.dart';
 import 'book_detail_screen.dart';
+import '../profile/update_profile_screen.dart';
 
 class BookListScreen extends StatefulWidget {
   const BookListScreen({super.key});
@@ -66,6 +67,15 @@ class _BookListScreenState extends State<BookListScreen> {
       appBar: AppBar(
         title: const Text('Book Library'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const UpdateProfileScreen()),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: _logout,

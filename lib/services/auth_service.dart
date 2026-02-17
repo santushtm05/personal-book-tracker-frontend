@@ -61,4 +61,67 @@ class AuthService {
       return AuthResponse(success: false, error: e.toString());
     }
   }
+
+  Future<AuthResponse> getProfile(String token) async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://localhost:8080/api/auth/get-authenticated-user-details'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      final Map<String, dynamic> body = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        return AuthResponse.fromJson(body);
+      } else {
+        return AuthResponse(
+          success: false,
+          message: body['message'],
+          error: body['error'],
+        );
+      }
+    } catch (e) {
+      return AuthResponse(success: false, error: e.toString());
+    }
+  }
+
+  Future<AuthResponse> updateProfile(int userId, String token, Map<String, dynamic> data) async {
+    try {
+      final response = await http.patch(
+        Uri.parse('http://localhost:8080/api/users/update/$userId'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(data),
+      );
+
+      final Map<String, dynamic> body = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        return AuthResponse.fromJson(body);
+      } else {
+        return AuthResponse(
+          success: false,
+          message: body['message'],
+          error: body['error'],
+        );
+      }
+    } catch (e) {
+      return AuthResponse(success: false, error: e.toString());
+    }
+  }
+
+  Future<bool> checkUsername(String username) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_baseUrl/username-available?username=$username'),
+      );
+      final body = jsonDecode(response.body);
+      return body['success'] == true && body['message'] == 'Username Available!';
+    } catch (e) {
+      return false;
+    }
+  }
 }

@@ -82,4 +82,51 @@ class AuthProvider with ChangeNotifier {
     await prefs.remove('token');
     notifyListeners();
   }
+
+  Future<void> fetchUserDetails() async {
+    if (_token == null) return;
+    
+    try {
+      final response = await _authService.getProfile(_token!);
+      if (response.success && response.user != null) {
+        _user = response.user;
+        notifyListeners();
+      }
+    } catch (e) {
+      // Error fetching user details, silent or handle elsewhere
+    }
+  }
+
+  Future<bool> updateUserDetails(Map<String, dynamic> data) async {
+    if (_token == null || _user == null) return false;
+    
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final response = await _authService.updateProfile(_user!.id, _token!, data);
+
+      if (response.success && response.user != null) {
+        _user = response.user;
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      } else {
+        _error = response.message ?? response.error ?? 'Update Failed';
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      _error = e.toString();
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> checkUsernameAvailability(String username) async {
+    return await _authService.checkUsername(username);
+  }
 }
