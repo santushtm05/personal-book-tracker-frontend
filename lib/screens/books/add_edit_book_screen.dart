@@ -75,27 +75,8 @@ class _AddEditBookScreenState extends State<AddEditBookScreen> {
         'rating': double.tryParse(_ratingController.text) ?? 0.0,
         'pages': int.tryParse(_pagesController.text) ?? 0,
         'thumbnail_url': _thumbnailController.text.trim(),
-        'tags': _selectedTags.map((t) => t.id).toList(), // Assuming backend expects tag IDs
-        // Note: Check if backend expects full tag objects or just IDs. Usually IDs for input.
-        // API documentation wasn't explicit, but IDs are standard.
-        // If API expects Objects, use t.toJson().
+        'tags': _selectedTags.map((t) => t.id).toList(), // API expects [1, 3, 2]
       };
-
-      // To be safe with the provided API collection (which I barely recall seeing tags input structure),
-      // I'll send IDs. If it fails, we debug.
-
-      // Actually, looking at typical patterns, let's look at `Book` model.
-      // `tags` in Book model is List<Tag>.
-      // For creation, usually `tag_ids` or `tags` as list of objects.
-      // I'll send `tags` as list of IDs based on best guess.
-      // Correction: If the API matches the Internship Assessment, it's likely simple.
-      // Let's assume sending the whole tag object or just ID is fine.
-      // I'll send list of IDs for now as `tag_ids` might be the key, or `tags` expects objects.
-      
-      // Let's refine based on "standard" behavior:
-      // Typically `tags` : [{"id": 1}, {"id": 2}]
-      final tagsForApi = _selectedTags.map((t) => {'id': t.id}).toList();
-      bookData['tags'] = tagsForApi;
 
       final provider = Provider.of<BookProvider>(context, listen: false);
       try {
@@ -124,6 +105,54 @@ class _AddEditBookScreenState extends State<AddEditBookScreen> {
         }
       }
     }
+  }
+
+  void _showAddTagDialog() {
+    final tagController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Add Custom Tag'),
+        content: TextField(
+          controller: tagController,
+          decoration: const InputDecoration(labelText: 'Tag Name'),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              final name = tagController.text.trim();
+              if (name.isNotEmpty) {
+                Navigator.pop(context); // Close dialog
+                try {
+                  final newTag = await Provider.of<BookProvider>(context, listen: false).createTag(name);
+                  if (mounted) {
+                    setState(() {
+                      _availableTags.add(newTag);
+                      _selectedTags.add(newTag);
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Tag added successfully')),
+                    );
+                  }
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Failed to add tag: $e')),
+                    );
+                  }
+                }
+              }
+            },
+            child: const Text('Add'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -196,7 +225,17 @@ class _AddEditBookScreenState extends State<AddEditBookScreen> {
                 prefixIcon: Icons.image,
               ),
               const SizedBox(height: 24),
-              const Text('Tags', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Tags', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  TextButton.icon(
+                    onPressed: _showAddTagDialog,
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add Tag'),
+                  ),
+                ],
+              ),
               const SizedBox(height: 8),
               _isLoadingTags
                   ? const Center(child: CircularProgressIndicator())

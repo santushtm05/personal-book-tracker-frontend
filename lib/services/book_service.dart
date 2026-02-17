@@ -90,13 +90,25 @@ class BookService {
     }
   }
 
-  // Assuming tags endpoint is at /api/tags based on typical REST patterns or previous API analysis
+  Future<Tag> createTag(String tagName) async {
+    final headers = await _getHeaders();
+    final response = await http.post(
+      Uri.parse('http://localhost:8080/api/tags/create'),
+      headers: headers,
+      body: jsonEncode({'tag_name': tagName}),
+    );
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      return Tag.fromJson(jsonDecode(response.body)['data']);
+    } else {
+      throw Exception('Failed to create tag');
+    }
+  }
+
   Future<List<Tag>> getTags() async {
     final headers = await _getHeaders();
-    // Adjusting URL to be relative to base or absolute if different. 
-    // Assuming http://localhost:8080/api/tags
     final response = await http.get(
-      Uri.parse('http://localhost:8080/api/tags'),
+      Uri.parse('http://localhost:8080/api/tags/'),
       headers: headers,
     );
 

@@ -130,6 +130,14 @@ class BookProvider with ChangeNotifier {
     }
   }
 
+  Future<Tag> createTag(String tagName) async {
+    try {
+      return await _bookService.createTag(tagName);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<List<Tag>> fetchTags() async {
     try {
       return await _bookService.getTags();
