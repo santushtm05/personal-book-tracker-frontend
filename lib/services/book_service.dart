@@ -65,8 +65,8 @@ class BookService {
 
   Future<Book> updateBook(int id, Map<String, dynamic> bookData) async {
     final headers = await _getHeaders();
-    final response = await http.put(
-      Uri.parse('$_baseUrl/$id'),
+    final response = await http.patch(
+      Uri.parse('$_baseUrl/update/$id'),
       headers: headers,
       body: jsonEncode(bookData),
     );
@@ -81,7 +81,7 @@ class BookService {
   Future<void> deleteBook(int id) async {
     final headers = await _getHeaders();
     final response = await http.delete(
-      Uri.parse('$_baseUrl/$id'),
+      Uri.parse('$_baseUrl/delete/$id'),
       headers: headers,
     );
 
