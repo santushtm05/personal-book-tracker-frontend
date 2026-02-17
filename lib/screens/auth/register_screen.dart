@@ -3,48 +3,51 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/custom_text_field.dart';
 import '../../widgets/primary_button.dart';
-import 'register_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _fullNameController = TextEditingController();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   @override
   void dispose() {
+    _fullNameController.dispose();
     _usernameController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  void _handleLogin() async {
+  void _handleRegister() async {
     if (_formKey.currentState!.validate()) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      final success = await authProvider.login(
+      final success = await authProvider.register(
         _usernameController.text.trim(),
         _passwordController.text,
+        _fullNameController.text.trim(),
       );
 
       if (success) {
-        // Navigate to BookList (Placeholder for now)
         if (mounted) {
-           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Login Successful!')),
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Registration Successful! Please Login.')),
           );
-           // TODO: Navigate to BookListScreen
+          Navigator.pop(context); // Return to Login
         }
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(authProvider.error ?? 'Login Failed'),
+              content: Text(authProvider.error ?? 'Registration Failed'),
               backgroundColor: Colors.red,
             ),
           );
@@ -56,6 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: const Text('Create Account')),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -65,27 +69,33 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Icon(Icons.library_books, size: 80, color: Colors.blue),
+                const Icon(Icons.person_add, size: 80, color: Colors.blue),
                 const SizedBox(height: 16),
                 const Text(
-                  'Secure Book Library',
+                  'Join Secure Book Library',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Welcome back! Please login.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey),
-                ),
                 const SizedBox(height: 32),
+                CustomTextField(
+                  label: 'Full Name',
+                  controller: _fullNameController,
+                  prefixIcon: Icons.badge,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your full name';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
                 CustomTextField(
                   label: 'Username',
                   controller: _usernameController,
                   prefixIcon: Icons.person,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your username';
+                      return 'Please enter a username';
                     }
                     return null;
                   },
@@ -98,10 +108,26 @@ class _LoginScreenState extends State<LoginScreen> {
                   prefixIcon: Icons.lock,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
+                      return 'Please enter a password';
                     }
                     if (value.length < 8) {
                       return 'Password must be at least 8 characters';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                CustomTextField(
+                  label: 'Confirm Password',
+                  controller: _confirmPasswordController,
+                  isPassword: true,
+                  prefixIcon: Icons.lock_outline,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please confirm your password';
+                    }
+                    if (value != _passwordController.text) {
+                      return 'Passwords do not match';
                     }
                     return null;
                   },
@@ -110,21 +136,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 Consumer<AuthProvider>(
                   builder: (context, auth, child) {
                     return PrimaryButton(
-                      text: 'LOGIN',
+                      text: 'REGISTER',
                       isLoading: auth.isLoading,
-                      onPressed: _handleLogin,
+                      onPressed: _handleRegister,
                     );
                   },
                 ),
                 const SizedBox(height: 16),
                 TextButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const RegisterScreen()),
-                    );
+                    Navigator.pop(context); // Go back to Login
                   },
-                  child: const Text("Don't have an account? Register"),
+                  child: const Text("Already have an account? Login"),
                 ),
               ],
             ),

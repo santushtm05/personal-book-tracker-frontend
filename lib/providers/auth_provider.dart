@@ -49,6 +49,32 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  Future<bool> register(String username, String password, String fullName) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final response = await _authService.register(username, password, fullName);
+
+      if (response.success) {
+        // Registration successful, usually we redirect to login or auto-login
+        // For now, just return true so UI can navigate
+      } else {
+        _error = response.message ?? response.error ?? 'Registration Failed';
+      }
+
+      _isLoading = false;
+      notifyListeners();
+      return response.success;
+    } catch (e) {
+      _error = e.toString();
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
   void logout() async {
     _token = null;
     _user = null;
