@@ -1,10 +1,10 @@
-# 📚 Secure Book Library - Flutter Frontend
+#  Personal Book Tracker - Frontend
 
 A professional, production-grade Flutter application built for the **Internship Assessment**. This application provides a secure and intuitive interface for managing a personal book library, featuring robust authentication, CRUD operations, and optimized data fetching.
 
 ---
 
-## 🚀 Project Overview
+## Project Overview
 
 The **Secure Book Library** is designed to provide users with a safe environment to track their reading progress. The app enforces strict JWT-based authentication to protect user data and offers a seamless experience across multiple screens.
 
@@ -16,7 +16,7 @@ The **Secure Book Library** is designed to provide users with a safe environment
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 *   **Framework**: [Flutter](https://flutter.dev/) (Cross-platform UI)
 *   **State Management**: [Provider](https://pub.dev/packages/provider) (Separation of concerns)
@@ -26,7 +26,7 @@ The **Secure Book Library** is designed to provide users with a safe environment
 
 ---
 
-## 📁 Folder Structure
+## Folder Structure
 
 The project follows a modular architecture to ensure scalability and maintainability:
 
@@ -46,7 +46,7 @@ lib/
 
 ---
 
-## 🔐 API Integration Notes
+## API Integration Notes
 
 The app integrates with a Spring Boot backend. All secured requests use a **JWT (JSON Web Token)** passed via the `Authorization` header.
 
@@ -69,7 +69,7 @@ The app integrates with a Spring Boot backend. All secured requests use a **JWT 
 
 ---
 
-## 📱 Screen Flow & Logic
+## Screen Flow & Logic
 
 1.  **Login/Register**: Initial entry point. Forms include regex-based email/username validation.
 2.  **Book List (Home)**: Displays a paginated list of books. Features a real-time **debounced search** bar.
@@ -77,7 +77,7 @@ The app integrates with a Spring Boot backend. All secured requests use a **JWT 
 4.  **Add/Edit Book**: Unified form for adding or updating book metadata including multiple **Tags**.
 5.  **Logout**: Accessible from the main dashboard and profile page, safely clears the token and redirects to authentication.
 
-### **✨ Bonus Features Implemented**
+### ** Bonus Features Implemented**
 *   **Pagination**: Infinite scroll support for the book list.
 *   **Real-time Search**: Debounced search requests to minimize API calls.
 *   **Tag Management**: Dynamic creation and selection of custom tags.
@@ -85,7 +85,7 @@ The app integrates with a Spring Boot backend. All secured requests use a **JWT 
 
 ---
 
-## ⚙️ App Setup Guide
+## App Setup Guide
 
 ### Prerequisites
 *   Flutter SDK (v3.0.0+)
@@ -112,14 +112,3 @@ The app integrates with a Spring Boot backend. All secured requests use a **JWT 
     ```bash
     flutter run
     ```
-
----
-
-## 💎 Evaluation Criteria Adherence
-*   **Separation of Concerns**: UI (Screens) is strictly separated from API logic (Services) and State (Providers).
-*   **Code Quality**: Heavy use of reusable components in `lib/widgets`.
-*   **Usability**: Form validations, loading indicators, and informative SnackBars for user feedback.
-*   **Documentation**: Detailed mapping of backend endpoints to frontend screens.
-
----
-*Created as part of the Internship Assessment - 2026*
