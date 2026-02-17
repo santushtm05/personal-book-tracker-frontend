@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/book_provider.dart';
 import 'dart:async';
+import 'add_edit_book_screen.dart';
+import 'book_detail_screen.dart';
 
 class BookListScreen extends StatefulWidget {
   const BookListScreen({super.key});
@@ -138,7 +140,12 @@ class _BookListScreenState extends State<BookListScreen> {
                         ),
                         isThreeLine: true,
                         onTap: () {
-                          // TODO: Navigate to Book Detail
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BookDetailScreen(bookId: book.id),
+                            ),
+                          );
                         },
                       ),
                     );
@@ -151,7 +158,10 @@ class _BookListScreenState extends State<BookListScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: Navigate to Add Book
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddEditBookScreen()),
+          );
         },
         child: const Icon(Icons.add),
       ),

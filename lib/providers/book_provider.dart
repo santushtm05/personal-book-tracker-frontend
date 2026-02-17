@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/book.dart';
+import '../models/tag.dart';
 import '../services/book_service.dart';
 
 class BookProvider with ChangeNotifier {
@@ -75,6 +76,66 @@ class BookProvider with ChangeNotifier {
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  Future<void> addBook(Map<String, dynamic> bookData) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final newBook = await _bookService.addBook(bookData);
+      _books.insert(0, newBook); // Add to top of list
+      _error = null;
+    } catch (e) {
+      _error = e.toString();
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateBook(int id, Map<String, dynamic> bookData) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final updatedBook = await _bookService.updateBook(id, bookData);
+      final index = _books.indexWhere((b) => b.id == id);
+      if (index != -1) {
+        _books[index] = updatedBook;
+      }
+      _error = null;
+    } catch (e) {
+      _error = e.toString();
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteBook(int id) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      await _bookService.deleteBook(id);
+      _books.removeWhere((b) => b.id == id);
+      _error = null;
+    } catch (e) {
+      _error = e.toString();
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<List<Tag>> fetchTags() async {
+    try {
+      return await _bookService.getTags();
+    } catch (e) {
+      // debugPrint('Error fetching tags: $e');
+      return [];
     }
   }
 }

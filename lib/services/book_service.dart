@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/book.dart';
+import '../models/tag.dart';
 
 class BookService {
   static const String _baseUrl = 'http://localhost:8080/api/books';
@@ -47,5 +48,65 @@ class BookService {
     }
   }
 
-  // Placeholder for other CRUD operations
+  Future<Book> addBook(Map<String, dynamic> bookData) async {
+    final headers = await _getHeaders();
+    final response = await http.post(
+      Uri.parse(_baseUrl),
+      headers: headers,
+      body: jsonEncode(bookData),
+    );
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      return Book.fromJson(jsonDecode(response.body)['data']);
+    } else {
+      throw Exception('Failed to add book');
+    }
+  }
+
+  Future<Book> updateBook(int id, Map<String, dynamic> bookData) async {
+    final headers = await _getHeaders();
+    final response = await http.put(
+      Uri.parse('$_baseUrl/$id'),
+      headers: headers,
+      body: jsonEncode(bookData),
+    );
+
+    if (response.statusCode == 200) {
+      return Book.fromJson(jsonDecode(response.body)['data']);
+    } else {
+      throw Exception('Failed to update book');
+    }
+  }
+
+  Future<void> deleteBook(int id) async {
+    final headers = await _getHeaders();
+    final response = await http.delete(
+      Uri.parse('$_baseUrl/$id'),
+      headers: headers,
+    );
+
+    if (response.statusCode != 200 && response.statusCode != 204) {
+      throw Exception('Failed to delete book');
+    }
+  }
+
+  // Assuming tags endpoint is at /api/tags based on typical REST patterns or previous API analysis
+  Future<List<Tag>> getTags() async {
+    final headers = await _getHeaders();
+    // Adjusting URL to be relative to base or absolute if different. 
+    // Assuming http://localhost:8080/api/tags
+    final response = await http.get(
+      Uri.parse('http://localhost:8080/api/tags'),
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body);
+      final List<dynamic> data = body['data'];
+      return data.map((json) => Tag.fromJson(json)).toList();
+    } else {
+      // Fallback or empty list if tags endpoint fails or doesn't exist yet
+      return []; 
+    }
+  }
 }
